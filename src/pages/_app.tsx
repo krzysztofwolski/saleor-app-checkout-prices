@@ -11,6 +11,10 @@ import { NoSSRWrapper } from "../lib/no-ssr-wrapper";
 import { GraphQLProvider } from "../providers/GraphQLProvider";
 import { ThemeProvider } from "@saleor/macaw-ui/next";
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
+
 /**
  * Ensure instance is a singleton.
  * TODO: This is React 18 issue, consider hiding this workaround inside app-sdk
@@ -30,15 +34,17 @@ function NextApp({ Component, pageProps }: AppProps) {
 
   return (
     <NoSSRWrapper>
-      <AppBridgeProvider appBridgeInstance={appBridgeInstance}>
-        <GraphQLProvider>
-          <ThemeProvider >
-            <ThemeSynchronizer />
-            <RoutePropagator />
-            <Component {...pageProps} />
-          </ThemeProvider>
-        </GraphQLProvider>
-      </AppBridgeProvider>
+      <QueryClientProvider client={queryClient}>
+        <AppBridgeProvider appBridgeInstance={appBridgeInstance}>
+          <GraphQLProvider>
+            <ThemeProvider>
+              <ThemeSynchronizer />
+              <RoutePropagator />
+              <Component {...pageProps} />
+            </ThemeProvider>
+          </GraphQLProvider>
+        </AppBridgeProvider>
+      </QueryClientProvider>
     </NoSSRWrapper>
   );
 }
